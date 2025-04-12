@@ -7,19 +7,23 @@ export class FirebaseService {
   private firebaseApp: admin.app.App;
 
   constructor(private configService: ConfigService) {
-    const privateKey = this.configService.get<string>('FIREBASE_PRIVATE_KEY')?.replace(/\\n/g, '\n');
-    const clientEmail = this.configService.get<string>('FIREBASE_CLIENT_EMAIL');
-    const projectId = this.configService.get<string>('FIREBASE_PROJECT_ID');
-    const databaseURL = this.configService.get<string>('FIREBASE_DATABASE_URL');
+    if (admin.apps.length > 0) {
+      const privateKey = this.configService.get<string>('FIREBASE_PRIVATE_KEY')?.replace(/\\n/g, '\n');
+      const clientEmail = this.configService.get<string>('FIREBASE_CLIENT_EMAIL');
+      const projectId = this.configService.get<string>('FIREBASE_PROJECT_ID');
+      const databaseURL = this.configService.get<string>('FIREBASE_DATABASE_URL');
 
-    this.firebaseApp = admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId,
-        privateKey,
-        clientEmail,
-      }),
-      databaseURL,
-    });
+      this.firebaseApp = admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId,
+          privateKey,
+          clientEmail,
+        }),
+        databaseURL,
+      });
+    } else {
+      this.firebaseApp = admin.apps[0]!;
+    }
   }
 
   getAuth() {
